@@ -35,6 +35,7 @@ enum COLORS {
 class GameObject {
 
 public:
+    void draw_char(char ch, int y, int x, COLORS foreground_color, COLORS background_color);
     GameObject(int = 0, int = 0, char = ' ', COLORS = WHITE);
     GameObject(const GameObject&);
     virtual ~GameObject();

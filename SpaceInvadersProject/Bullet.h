@@ -1,11 +1,10 @@
 #ifndef BULLET_H
 #define BULLET_H
-
 #include "GameObject.h"
 
 class Bullet : public GameObject {
 	public:
-	Bullet(int = 0, int = 0, char = ' ', COLORS = BLACK, int = 0);
+	Bullet(int = 0, int = 0, char = ' ', COLORS = LIGHT_GREY, int = 0);
 	Bullet(const Bullet&);
 	Bullet& operator=(const Bullet&);
 	virtual ~Bullet();

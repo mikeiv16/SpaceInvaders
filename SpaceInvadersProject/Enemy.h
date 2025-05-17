@@ -1,6 +1,5 @@
 #ifndef ENEMY_H
 #define ENEMY_H
-
 #include "GameObject.h"
 
 class Enemy : public GameObject {
@@ -20,22 +19,28 @@ private:
 
 class EnemyType1 : public Enemy{
 public:
-	EnemyType1(int x, int y);
+	EnemyType1(int, int);
 	int getPoints() const override;
 };
+
+
 class EnemyType2 : public Enemy {
 public:
-	EnemyType2(int x, int y);
+	EnemyType2(int, int);
 	int getPoints() const override;
 };
+
+
 class EnemyType3 : public Enemy {
 public:
-	EnemyType3(int x, int y);
+	EnemyType3(int, int);
 	int getPoints() const override;
 };
+
+
 class EnemyType4 : public Enemy {
 public:
-	EnemyType4(int x, int y);
+	EnemyType4(int, int);
 	int getPoints() const override;
 };
 
