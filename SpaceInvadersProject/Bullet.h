@@ -4,7 +4,8 @@
 #include "GameObject.h"
 
 class Bullet : public GameObject {
-	Bullet(int = 0, int = 0, char = ' ', COLORS = WHITE, int = 0);
+	public:
+	Bullet(int = 0, int = 0, char = ' ', COLORS = BLACK, int = 0);
 	Bullet(const Bullet&);
 	Bullet& operator=(const Bullet&);
 	virtual ~Bullet();

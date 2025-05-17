@@ -13,6 +13,7 @@ GameObject& GameObject::operator=(const GameObject& rhs) {
 	return *this;
 }
 
+
 void GameObject::update(){
 
 }
