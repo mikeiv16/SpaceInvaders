@@ -7,8 +7,8 @@
 #include <iostream>
 using namespace std;
 
-const int POLE_ROWS = 90;
-const int POLE_COLS = 180;
+const int POLE_ROWS = 30;
+const int POLE_COLS = 75;
 
 enum COLORS {
     BLACK = 0,

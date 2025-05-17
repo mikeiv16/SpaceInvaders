@@ -5,11 +5,11 @@
 #include "GameObject.h"
 #include <conio.h> // za input
 
-
 Game& Game::get() {
     static Game instance;
     return instance;
 }
+
 
 void Game::initializeEnemies() {
     enemies.clear();
@@ -49,6 +49,7 @@ void Game::input() {
 }
 
 void Game::update() {
+    player.draw_char(player.getSymbol(), player.getY(), player.getX(), player.getColor(), YELLOW);
 }
 
 void Game::checkCollisions() {
@@ -56,18 +57,53 @@ void Game::checkCollisions() {
 }
 
 void Game::render() {
-    for (int i = 0; i < POLE_ROWS; i++) cout << "=";
+    //razmer na console
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD bufferSize = { POLE_COLS, POLE_ROWS };
+	SetConsoleScreenBufferSize(hConsole, bufferSize);
+	SMALL_RECT windowSize = { 0, 0, POLE_COLS - 1, POLE_ROWS - 1 };
+	SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
+
+	// white console -> SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY);
+
+    system("cls");
+    for (int i = 0; i < POLE_COLS; i++) cout << "=";
     cout << endl;
-    cout << "Lives: " << player.getLives() << "   Level: " << this->level << "    Score: " << player.getScore() << endl;
-    for (int i = 0; i < POLE_ROWS; i++) cout << "=";
+    cout << "\t\tLives: " << player.getLives() << "   Level: " << this->level << "    Score: " << player.getScore() << endl;
+    for (int i = 0; i < POLE_COLS; i++) cout << "=";
     cout << endl;
 
+    for (int i = 0; i < POLE_ROWS-4; i++) {
+        for (int j = 0; j < POLE_COLS; j++) {
+            cout << " ";
+        }
+        cout << endl;
+    }
+
+	player.setX(POLE_COLS / 2);
+	player.setY(POLE_ROWS - 2);
+	player.draw_char(player.getSymbol(), player.getY(), player.getX(), player.getColor(), YELLOW);
+    /*for (auto enemy : enemies) {
+        enemy->render();
+    }
+
+    for (auto bullet : bullets) {
+        bullet->render();
+    }*/
 }
 void Game::run() {
-    Player newPlayer(0, 0, '*', YELLOW, 3, 0);
+    
+	Player newPlayer(0, 0, '*', YELLOW, 3, 0);
     player = newPlayer;
     render();
 
+    while (true) {
+		input();
+		update();
+		checkCollisions();
+
+        Sleep(100); //delay za 1sec
+    }
     system("pause");
 }
 

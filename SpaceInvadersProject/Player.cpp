@@ -16,10 +16,12 @@ Player& Player::operator=(const Player& rhs){
 }
 
 void Player::moveLeft(){
+	draw_char(getSymbol(), getY(), getX(), getColor(), BLACK);
 	if (getX() > 0) setX(getX() - 1);
 }
 void Player::moveRight(){
-	if (getX() < POLE_ROWS - 2) setX(getX() + 1);
+	draw_char(getSymbol(), getY(), getX(), getColor(), BLACK);
+	if (getX() < POLE_COLS-1) setX(getX() + 1);
  }
 void Player::shoot(){
 	Game::get().addBullet(new Bullet(getX(), getY() - 1, '|', GREEN, -1));
