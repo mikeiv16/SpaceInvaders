@@ -18,13 +18,16 @@ public:
 	void checkCollisions();
 	void render();
 	void run();
+	void checkLevel();
+	void initializeStatusBar(int, int, int);
 private:
 	Player player;
 	std::vector<GameObject*> enemies;
 	std::vector<GameObject*> bullets;
 	int score;
 	int level;
-	bool running;
+	bool isRunning;
+	bool gotExtraLife;
 };
 
 #endif

@@ -18,10 +18,16 @@ Player& Player::operator=(const Player& rhs){
 void Player::moveLeft(){
 	draw_char(getSymbol(), getY(), getX(), getColor(), BLACK);
 	if (getX() > 0) setX(getX() - 1);
+
+	//for testing: +10 score when moving left
+	setScore(getScore() + 10);
 }
 void Player::moveRight(){
 	draw_char(getSymbol(), getY(), getX(), getColor(), BLACK);
 	if (getX() < POLE_COLS-1) setX(getX() + 1);
+
+	//for testing: -1 lives when moving right
+	setLives(getLives() - 1);
  }
 void Player::shoot(){
 	Game::get().addBullet(new Bullet(getX(), getY() - 1, '|', GREEN, -1));

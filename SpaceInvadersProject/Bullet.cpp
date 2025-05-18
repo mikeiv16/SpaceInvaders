@@ -15,5 +15,5 @@ void Bullet::update(){
 	setY(getY() + direction);
 }
 void Bullet::render(){
-	draw_char(getSymbol(), getY(), getX(), getColor(), WHITE);
+	draw_char(getSymbol(), getY(), getX(), getColor(), LIGHT_RED);
 }

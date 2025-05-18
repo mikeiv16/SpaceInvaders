@@ -3,6 +3,8 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "GameObject.h"
+#include <iostream>
+#include <sstream>
 #include <conio.h> // za input
 
 Game& Game::get() {
@@ -18,6 +20,7 @@ void Game::initializeEnemies() {
         switch (level) {
             case 1: {
                 enemies.push_back(new EnemyType1(10 + spacing * i, 3));
+                
                 break;
             }
             case 2: {
@@ -43,17 +46,79 @@ void Game::input() {
         switch (key) {
             case 'a': case 'A': player.moveLeft(); break;
             case 'd': case 'D': player.moveRight(); break;
-            case ' ': player.shoot(); break;
+            case ' ': {
+                addBullet(new Bullet(player.getX(), player.getY() - 1, '|', GREEN, -1));
+				break;
+            }
         }
     }
 }
 
 void Game::update() {
     player.draw_char(player.getSymbol(), player.getY(), player.getX(), player.getColor(), YELLOW);
+
+
+    
+    for (auto enemy : enemies) {
+        enemy->render();
+    }
+
+    for (auto bullet : bullets) {
+        bullet->render();
+    }
+
+}
+
+void Game::checkLevel() {
+    if (player.getLives() <= 0) {
+        isRunning = false;
+        system("cls");
+		cout << "No more lives left!\nGame Over!" << endl;
+    }
+
+    if (level == 1 && player.getScore() >= 200) {
+        level++;
+        player.setScore(0);
+        initializeEnemies();
+    }
+    else if (level == 2 && player.getScore() >= 500) {
+        level++;
+        player.setScore(0);
+        initializeEnemies();
+    }
+    else if (player.getScore() >= 300) {
+        if (!gotExtraLife) {
+            player.setLives(player.getLives() + 1);
+            gotExtraLife = true;
+        }
+    }
+    else if (level == 3 && player.getScore() >= 700) //conditiona trqbva da se smeni kogato sa umreli vsichki enemyta da prikluchva levela
+    {
+        isRunning = false;
+        system("cls");
+		cout << "You win!" << endl;
+    }
+
 }
 
 void Game::checkCollisions() {
 
+}
+void Game::initializeStatusBar(int lives, int level, int score) {
+
+    ostringstream oss;
+    for (int i = 0; i < POLE_COLS; i++) oss << "=";
+    oss << "\n";
+    oss << "\t\tLives: " << player.getLives() << "   Level: " << this->level << "    Score: " << player.getScore();
+	oss << "\n";
+    for (int i = 0; i < POLE_COLS; i++) oss << "=";
+    oss << "\n";
+
+    //BUG kogato se kachi level 2: score pishe primerno 800 a to e 80, pishe go zashtoto e 80 no sedi edna 0 ot minaliq level poneje e bilo tricifreno chislo
+
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), {0, 0});
+	cout << oss.str();
+   
 }
 
 void Game::render() {
@@ -64,14 +129,16 @@ void Game::render() {
 	SMALL_RECT windowSize = { 0, 0, POLE_COLS - 1, POLE_ROWS - 1 };
 	SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 
+    //cursor hide:
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(hConsole, &cursorInfo);
+    cursorInfo.bVisible = FALSE;
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
+
 	// white console -> SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY);
 
-    system("cls");
-    for (int i = 0; i < POLE_COLS; i++) cout << "=";
-    cout << endl;
-    cout << "\t\tLives: " << player.getLives() << "   Level: " << this->level << "    Score: " << player.getScore() << endl;
-    for (int i = 0; i < POLE_COLS; i++) cout << "=";
-    cout << endl;
+	initializeStatusBar(player.getLives(), level, player.getScore());
+   
 
     for (int i = 0; i < POLE_ROWS-4; i++) {
         for (int j = 0; j < POLE_COLS; j++) {
@@ -83,26 +150,25 @@ void Game::render() {
 	player.setX(POLE_COLS / 2);
 	player.setY(POLE_ROWS - 2);
 	player.draw_char(player.getSymbol(), player.getY(), player.getX(), player.getColor(), YELLOW);
-    /*for (auto enemy : enemies) {
-        enemy->render();
-    }
-
-    for (auto bullet : bullets) {
-        bullet->render();
-    }*/
 }
 void Game::run() {
     
 	Player newPlayer(0, 0, '*', YELLOW, 3, 0);
     player = newPlayer;
-    render();
+    level = 1;
+    isRunning = 1;
+	gotExtraLife = 0; //na level 2 pri 300 tochki igracha poluchava edin extra jivot
 
-    while (true) {
+    render();
+    initializeEnemies();
+
+	while (isRunning) {
+        initializeStatusBar(player.getLives(), level, player.getScore());
 		input();
 		update();
 		checkCollisions();
-
-        Sleep(100); //delay za 1sec
+        Sleep(50); //skorost na igracha (delay za 50ms)
+        checkLevel();
     }
     system("pause");
 }
