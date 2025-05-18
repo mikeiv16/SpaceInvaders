@@ -5,7 +5,8 @@
 void GameObject::draw_char(char ch, int y, int x, COLORS foreground_color, COLORS background_color) {
 	HANDLE hConsoleOutput = ::GetStdHandle(STD_OUTPUT_HANDLE);
 	CHAR_INFO ch_info;
-	ch_info.Char.AsciiChar = ch;
+	//ch_info.Char.AsciiChar = ch; //izpolzvame UniCodeChar vmesto Ascii char za da moje direktno da se podava symbol kogato se vika funkciqta
+	ch_info.Char.UnicodeChar = ch;
 	ch_info.Attributes = foreground_color | (background_color << 4);
 
 	COORD buf_size = { 1, 1 };

@@ -47,7 +47,7 @@ void Game::input() {
             case 'a': case 'A': player.moveLeft(); break;
             case 'd': case 'D': player.moveRight(); break;
             case ' ': {
-                addBullet(new Bullet(player.getX(), player.getY() - 1, '|', GREEN, -1));
+                addBullet(new Bullet(player.getX(), player.getY() -1, '|', GREEN, -1));
 				break;
             }
         }
