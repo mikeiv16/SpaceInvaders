@@ -64,7 +64,20 @@ void Game::update() {
     }
 
     for (auto bullet : bullets) {
-        bullet->render();
+
+        for (int i = static_cast<int>(bullets.size()) - 1; i >= 0; --i) {
+            Bullet* b = dynamic_cast<Bullet*>(bullets[i]);
+            if (!b) continue;
+            b->draw_char(' ', b->getY(), b->getX(), b->getColor(), BLACK);
+            b->update();
+            if (b->getY() < 0) {
+                delete b;
+                bullets.erase(bullets.begin() + i);
+            }
+            else {
+                b->render();
+            }
+        }
     }
 
 }
@@ -102,6 +115,37 @@ void Game::checkLevel() {
 }
 
 void Game::checkCollisions() {
+
+    for (int i = static_cast<int>(bullets.size()) - 1; i >= 0; --i) {
+        Bullet* bullet = dynamic_cast<Bullet*>(bullets[i]);
+        if (!bullet) continue;
+        int bx = bullet->getX();
+        int by = bullet->getY();
+        for (int j = static_cast<int>(enemies.size()) - 1; j >= 0; --j) {
+            Enemy* enemy = dynamic_cast<Enemy*>(enemies[j]);
+            if (!enemy) continue;
+            if (enemy->getX() == bx && enemy->getY() == by) {
+                bullet->draw_char(' ', by, bx, bullet->getColor(), BLACK);
+                enemy->draw_char(' ', enemy->getY(), enemy->getX(), enemy->getColor(), BLACK);
+                player + enemy->getPoints();
+                delete bullet;
+                bullets.erase(bullets.begin() + i);
+                delete enemy;
+                enemies.erase(enemies.begin() + j);
+                break;
+            }
+        }
+    }
+    for (int j = static_cast<int>(enemies.size()) - 1; j >= 0; --j) {
+        Enemy* enemy = dynamic_cast<Enemy*>(enemies[j]);
+        if (!enemy) continue;
+        if (enemy->getX() == player.getX() && enemy->getY() == player.getY()) {
+            enemy->draw_char(' ', enemy->getY(), enemy->getX(), enemy->getColor(), BLACK);
+            player.setLives(player.getLives() - 1);
+            delete enemy;
+            enemies.erase(enemies.begin() + j);
+        }
+    }
 
 }
 void Game::initializeStatusBar(int lives, int level, int score) {
