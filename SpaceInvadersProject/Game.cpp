@@ -15,12 +15,13 @@ Game& Game::get() {
 
 void Game::initializeEnemies() {
     enemies.clear();
-    int spacing = 6;
+    int spacing = 4;
     for (int i = 0; i < 10; i++) {
         switch (level) {
             case 1: {
                 enemies.push_back(new EnemyType1(10 + spacing * i, 3));
-                
+                enemies.push_back(new EnemyType1(15 + spacing * i, 5));
+                enemies.push_back(new EnemyType1(10 + spacing * i, 7));
                 break;
             }
             case 2: {
@@ -70,7 +71,7 @@ void Game::update() {
             if (!b) continue;
             b->draw_char(' ', b->getY(), b->getX(), b->getColor(), BLACK);
             b->update();
-            if (b->getY() < 0) {
+            if (b->getY() < 3) {
                 delete b;
                 bullets.erase(bullets.begin() + i);
             }
