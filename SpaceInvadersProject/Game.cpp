@@ -57,13 +57,25 @@ void Game::input() {
 
 void Game::update() {
     player.draw_char(player.getSymbol(), player.getY(), player.getX(), player.getColor(), YELLOW);
-
-
+    enemyCooldown++;
     
-    for (auto enemy : enemies) {
-        enemy->render();
-    }
+    if (enemyCooldown > 25) {
+        for (auto enemy : enemies) {
+            enemy->render();
 
+            addBullet(new Bullet(enemy->getX(), enemy->getY() + 1, 'o', RED, 1));
+
+            if (enemy->getY() >= POLE_ROWS - 2) {
+                isRunning = false;
+                system("cls");
+                cout << "Game Over!" << endl;
+                break;
+            }
+
+        }
+        enemyCooldown = 0;
+    }
+    
     for (auto bullet : bullets) {
 
         for (int i = static_cast<int>(bullets.size()) - 1; i >= 0; --i) {
@@ -80,6 +92,7 @@ void Game::update() {
             }
         }
     }
+    
 
 }
 
@@ -184,6 +197,8 @@ void Game::render() {
 
 	initializeStatusBar(player.getLives(), level, player.getScore());
    
+	enemyCooldown = 0;
+    bulletCooldown = 0;
 
     for (int i = 0; i < POLE_ROWS-4; i++) {
         for (int j = 0; j < POLE_COLS; j++) {

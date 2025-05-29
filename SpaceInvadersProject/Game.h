@@ -28,6 +28,8 @@ private:
 	int level;
 	bool isRunning;
 	bool gotExtraLife;
+	int enemyCooldown;
+	int bulletCooldown;
 };
 
 #endif
