@@ -14,7 +14,15 @@ Game& Game::get() {
 
 
 void Game::initializeEnemies() {
+
+    //izchistvane na enemytata kato se smeni levela
+	for (auto e : enemies) {
+		e->draw_char(' ', e->getY(), e->getX(), e->getColor(), BLACK);
+        delete e;
+	}
     enemies.clear();
+
+
     int spacing = 4;
     for (int i = 0; i < 10; i++) {
         switch (level) {
@@ -63,7 +71,7 @@ void Game::update() {
         for (auto enemy : enemies) {
             enemy->render();
 
-            addBullet(new Bullet(enemy->getX(), enemy->getY() + 1, 'o', RED, 1));
+            //addBullet(new Bullet(enemy->getX(), enemy->getY() + 1, 'o', RED, 1));
 
             if (enemy->getY() >= POLE_ROWS - 2) {
                 isRunning = false;
