@@ -73,7 +73,15 @@ void Game::update() {
     player.draw_char(player.getSymbol(), player.getY(), player.getX(), player.getColor(), YELLOW);
     enemyCooldown++;
     bulletCooldown++;
-    int lvlCooldown = 0;
+    int lvlCooldownMax = 0;
+    int bulletCooldownMax = 0;
+
+    switch (level) {
+    case 1: lvlCooldownMax = 100; bulletCooldownMax = 25; break;
+    case 2: lvlCooldownMax = 65; bulletCooldownMax = 15; break;
+    case 3: lvlCooldownMax = 40; bulletCooldownMax = 7; break;
+    } //poneje na vseki level strelqt po-burzo i se dvijat po-burzo, ima razlichen cooldown za vseki level
+
 
 
     if (bulletCooldown > 25 && !(enemies.empty())) {
@@ -84,13 +92,9 @@ void Game::update() {
         bulletCooldown = 0;
     }
     
-    switch (level) {
-    case 1: lvlCooldown = 100; break;
-	case 2: lvlCooldown = 65; break;
-	case 3: lvlCooldown = 40; break;
-    } //poneje na vseki level strelqt po-burzo i se dvijat po-burzo, ima razlichen cooldown za vseki level
+    
 
-    if (enemyCooldown > lvlCooldown) {
+    if (enemyCooldown > lvlCooldownMax) {
         for (auto enemy : enemies) {
             enemy->draw_char(' ', enemy->getY(), enemy->getX(), enemy->getColor(), BLACK); //mahane na predishniq render na enemy-to
             enemy->setY(enemy->getY() + 1);
