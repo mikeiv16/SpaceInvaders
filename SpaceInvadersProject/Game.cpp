@@ -24,27 +24,33 @@ void Game::initializeEnemies() {
 
 
     int spacing = 4;
-    for (int i = 0; i < 10; i++) {
-        switch (level) {
-            case 1: {
-                enemies.push_back(new EnemyType1(10 + spacing * i, 3));
-                enemies.push_back(new EnemyType1(15 + spacing * i, 5));
-                enemies.push_back(new EnemyType1(10 + spacing * i, 7));
-                break;
-            }
-            case 2: {
-                enemies.push_back(new EnemyType2(10 + spacing * i, 3));
-                break;
-            }
-            case 3: {
-                enemies.push_back(new EnemyType3(10 + spacing * i, 3));
-                break;
-            }
-        }  
+    switch (level) {
+    case 1: {
+        for (int i = 0; i < 10; i++)
+        {
+            enemies.push_back(new EnemyType1(10 + spacing * i, 3));
+            enemies.push_back(new EnemyType1(15 + spacing * i, 5));
+            enemies.push_back(new EnemyType1(10 + spacing * i, 7));
+        }
+        break;
     }
-    if (level == 3) {
-        for (int i = 0; i < 5; ++i) {
-            enemies.push_back(new EnemyType4(15 + spacing * i, 5));
+    case 2: {
+        for (int i = 0; i < 10; i++) {
+            enemies.push_back(new EnemyType2(10 + spacing * i, 3));
+            enemies.push_back(new EnemyType3(15 + spacing * i, 5));
+        }
+
+        break;
+    }
+    case 3: {
+        for (int i = 0; i < 8; i++)
+        {
+            enemies.push_back(new EnemyType4(10 + spacing + 3 * i, 3));
+            enemies.push_back(new EnemyType3(15 + spacing + 4 * i, 5));
+            enemies.push_back(new EnemyType2(10 + spacing + 4 * i, 7));
+            enemies.push_back(new EnemyType1(15 + spacing + 4* i, 9));
+        }
+        break;
         }
     }
 }
@@ -66,12 +72,33 @@ void Game::input() {
 void Game::update() {
     player.draw_char(player.getSymbol(), player.getY(), player.getX(), player.getColor(), YELLOW);
     enemyCooldown++;
+    bulletCooldown++;
+    int lvlCooldown = 0;
+
+
+    if (bulletCooldown > 25 && !(enemies.empty())) {
+        int randomShooter = rand() % enemies.size();
+        Enemy* shooters = dynamic_cast<Enemy*>(enemies[randomShooter]);
+        Bullet* bullet = new Bullet(shooters->getX(), shooters->getY() + 1, 'x', RED, 1);
+        addBullet(bullet);
+        bulletCooldown = 0;
+    }
     
-    if (enemyCooldown > 25) {
+    switch (level) {
+    case 1: lvlCooldown = 100; break;
+	case 2: lvlCooldown = 65; break;
+	case 3: lvlCooldown = 40; break;
+    } //poneje na vseki level strelqt po-burzo i se dvijat po-burzo, ima razlichen cooldown za vseki level
+
+    if (enemyCooldown > lvlCooldown) {
         for (auto enemy : enemies) {
+            enemy->draw_char(' ', enemy->getY(), enemy->getX(), enemy->getColor(), BLACK); //mahane na predishniq render na enemy-to
+            enemy->setY(enemy->getY() + 1);
             enemy->render();
 
-            //addBullet(new Bullet(enemy->getX(), enemy->getY() + 1, 'o', RED, 1));
+           
+
+            //addBullet(new Bullet(enemy->getX(), enemy->getY() + 1, 'x', RED, 1));
 
             if (enemy->getY() >= POLE_ROWS - 2) {
                 isRunning = false;
@@ -84,23 +111,20 @@ void Game::update() {
         enemyCooldown = 0;
     }
     
-    for (auto bullet : bullets) {
-
-        for (int i = static_cast<int>(bullets.size()) - 1; i >= 0; --i) {
-            Bullet* b = dynamic_cast<Bullet*>(bullets[i]);
-            if (!b) continue;
-            b->draw_char(' ', b->getY(), b->getX(), b->getColor(), BLACK);
-            b->update();
-            if (b->getY() < 3) {
-                delete b;
-                bullets.erase(bullets.begin() + i);
-            }
-            else {
-                b->render();
-            }
+    
+    for (int i = static_cast<int>(bullets.size()) - 1; i >= 0; --i) {
+        Bullet* b = dynamic_cast<Bullet*>(bullets[i]);
+        if (!b) continue;
+        b->draw_char(' ', b->getY(), b->getX(), b->getColor(), BLACK);
+        b->update();
+        if (b->getY() < 3) {
+            delete b;
+            bullets.erase(bullets.begin() + i);
+        }
+        else {
+            b->render();
         }
     }
-    
 
 }
 
@@ -127,8 +151,9 @@ void Game::checkLevel() {
             gotExtraLife = true;
         }
     }
-    else if (level == 3 && player.getScore() >= 700) //conditiona trqbva da se smeni kogato sa umreli vsichki enemyta da prikluchva levela
+    else if (level == 3 && player.getScore() >= 700)
     {
+        cout << "test";
         isRunning = false;
         system("cls");
 		cout << "You win!" << endl;
@@ -154,6 +179,10 @@ void Game::checkCollisions() {
                 bullets.erase(bullets.begin() + i);
                 delete enemy;
                 enemies.erase(enemies.begin() + j);
+                break;
+            }
+            else if(player.getX() == bx && player.getY() == by)  {
+				player.setLives(player.getLives() - 1);
                 break;
             }
         }
@@ -184,7 +213,12 @@ void Game::initializeStatusBar(int lives, int level, int score) {
 
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), {0, 0});
 	cout << oss.str();
-   
+
+
+    //rendervat se vsichki enemyta za da moje v nachaloto kato se pusne programata da ne se chaka delay(cooldowna) predi da se vizualizirat purvite enemyta
+    for (auto e : enemies) {
+        e->render();
+    }
 }
 
 void Game::render() {
